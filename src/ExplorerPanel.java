@@ -19,6 +19,9 @@ public class ExplorerPanel extends JPanel {
     private final int ORIGIN_Y = -2520;
     private int map_x;
     private int map_y;
+
+    private final int CHAR_MAP_WIDTH = 39;
+    private final int CHAR_MAP_HEIGHT = 37;
     public ExplorerPanel(ArrayList<ParticleBatch> particleBatchList, Ghost character) {
         this.particleBatchList = particleBatchList;
         setPreferredSize(new Dimension(1280, 720));
@@ -26,8 +29,8 @@ public class ExplorerPanel extends JPanel {
         setBackground(Color.BLACK);
         setLayout(null); // Use null layout to manually position components
 
-        map_x = (156 / 2);
-        map_y = (140 / 2);
+        map_x = (CHAR_MAP_WIDTH / 2);
+        map_y = (CHAR_MAP_HEIGHT / 2);
 
         // Load character texture
         this.character = character;
@@ -88,7 +91,7 @@ public class ExplorerPanel extends JPanel {
         int newX = map_x + dx;
         int newY = map_y + dy;
 
-        if (newX >= 156 / 2 && newX <= (1280 * 4 - (156 / 2)) &&  newY >= 140 / 2 && newY <= (720 * 4 - (140 / 2))) {
+        if (newX >= CHAR_MAP_WIDTH / 2 && newX <= (1280 * 4 - (CHAR_MAP_WIDTH / 2)) &&  newY >= CHAR_MAP_HEIGHT / 2 && newY <= (720 * 4 - (CHAR_MAP_HEIGHT / 2))) {
             map_x = newX;
             map_y = newY;
         }
@@ -108,7 +111,7 @@ public class ExplorerPanel extends JPanel {
         for (ParticleBatch batch : particleBatchList) {
             ArrayList<Particle> particleList = batch.getParticles();
             for (Particle particle : particleList) {
-                particle.draw(g2d); // Use the transformed Graphics2D object
+                particle.drawMap(g2d); // Use the transformed Graphics2D object
             }
         }
 

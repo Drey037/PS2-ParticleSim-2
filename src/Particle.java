@@ -6,6 +6,7 @@ public class Particle {
     private final int size = 5;
 
     private int x, y; // coordinates
+    private int map_x, map_y;
 
     private Color color;
 
@@ -16,6 +17,8 @@ public class Particle {
     private static final int SCREEN_WIDTH = 1280;
     private static final int SCREEN_HEIGHT = 720;
 
+    private Boolean isExplorerMode;
+
     private static final Random random = new Random(); // for generating random color
 
     public Particle(int x, int y, double velocity, double theta){
@@ -24,6 +27,9 @@ public class Particle {
         this.velocity = velocity;
         this.theta = Math.toRadians(theta);
         this.color = getRandomLightColor();
+        isExplorerMode = false;
+        this.map_x = x * 4;
+        this.map_y = y * 4;
     }
 
     public void update() {
@@ -31,14 +37,20 @@ public class Particle {
         x += velocity * Math.cos(theta);
         y += velocity * Math.sin(theta);
 
-        // For screen bounds
-        if (x <= 0 || x >= SCREEN_WIDTH) {
-            theta = Math.PI - theta; // Reflect horizontally
-            x = Math.max(0, Math.min(x, SCREEN_WIDTH)); // Keep within bounds
+        if (!isExplorerMode) {
+
+            // For screen bounds
+            if (x <= 0 || x >= SCREEN_WIDTH) {
+                theta = Math.PI - theta; // Reflect horizontally
+                x = Math.max(0, Math.min(x, SCREEN_WIDTH)); // Keep within bounds
+            }
+            if (y <= 0 || y >= SCREEN_HEIGHT) {
+                theta = -theta; // Reflect vertically
+                y = Math.max(0, Math.min(y, SCREEN_HEIGHT)); // Keep within bounds
+            }
         }
-        if (y <= 0 || y >= SCREEN_HEIGHT) {
-            theta = -theta; // Reflect vertically
-            y = Math.max(0, Math.min(y, SCREEN_HEIGHT)); // Keep within bounds
+        else {
+
         }
     }
 
@@ -64,7 +76,16 @@ public class Particle {
     }
 
     public void draw (Graphics g){
+        isExplorerMode = false;
         g.setColor(color);
         g.fillRect(x, SCREEN_HEIGHT - y, size, size);
+    }
+
+    public void drawMap (Graphics g){
+        isExplorerMode = true;
+
+
+        g.setColor(color);
+        g.fillRect(x, SCREEN_HEIGHT - y, size * 4, size * 4);
     }
 }

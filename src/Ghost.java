@@ -5,9 +5,12 @@ public class Ghost {
     private Image texture_left;
     private Image texture_right;
 
-    private int CHAR_WIDTH = 35;
+    private int CHAR_WIDTH = 9;
 
-    private int CHAR_HEIGHT = 39;
+    private int CHAR_HEIGHT = 9;
+
+    private final int CHAR_MAP_WIDTH = 39;
+    private final int CHAR_MAP_HEIGHT = 37;
 
     private Boolean isLeft;
 
@@ -28,18 +31,6 @@ public class Ghost {
                 newY >= 0 && newY <= 720 - CHAR_HEIGHT) {
             x = newX;
             y = newY;
-
-            System.out.println("Modified X and Y: " + x + ", " + y);
-        }
-        else {
-            if (newX >= 0)
-                System.out.println("X must be more than 0");
-            if (newX <= 1280 - CHAR_WIDTH)
-                System.out.println("X must be less than 1280");
-            if (newY >= 0)
-                System.out.println("Y must be more than 0");
-            if (newY <= 720 - CHAR_HEIGHT)
-                System.out.println("Y must be less than 720");
         }
     }
 
@@ -52,15 +43,18 @@ public class Ghost {
     }
 
     private int translateY(int y) {
-        return (720 - 35) - y; //minus the height
+        return (720 - CHAR_HEIGHT) - y; //minus the height
     }
 
     public void drawMap(Graphics g) {
         // 300 x 270 original
+        // 156 Width, 140 height
         if (isLeft)
-            g.drawImage(texture_left, 640 - (156 / 2), 360 - (140 / 2), 156, 140, null);
+            g.drawImage(texture_left, 640 - (CHAR_MAP_WIDTH / 2), 360 - (CHAR_MAP_HEIGHT / 2), CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
         else
-            g.drawImage(texture_right, 640 - (156 / 2), 360 - (140 / 2), 156, 140, null);
+            g.drawImage(texture_right, 640 - (CHAR_MAP_WIDTH / 2), 360 - (CHAR_MAP_HEIGHT / 2), CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
+
+        // For 19 rows and 33 columns - 37 height 39 width
     }
 
     public void turnChar(Boolean isLeft) {
