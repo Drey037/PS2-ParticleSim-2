@@ -33,7 +33,6 @@ public class ExplorerPanel extends JPanel {
     public ExplorerPanel(ArrayList<ParticleBatch> particleBatchList, Ghost character) {
         this.particleBatchList = particleBatchList;
         setPreferredSize(new Dimension(1280, 720));
-        //setBackground(new Color(247, 247, 247));
         setBackground(new Color(247, 247, 247));
         setLayout(null); // Use null layout to manually position components
 
@@ -91,7 +90,7 @@ public class ExplorerPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
 
-        g.setColor(Color.WHITE);
+        g.setColor(new Color(247, 247, 247));
         g.fillRect(0,0, WIDTH, HEIGHT);
 
         Graphics2D g2d = (Graphics2D) g.create();
@@ -99,12 +98,8 @@ public class ExplorerPanel extends JPanel {
         int viewX = character.getX() - COL / 2;
         int viewY = HEIGHT - character.getY() - ROW / 2;
 
-        // Draw black bars if viewport is out of bounds
+        // Draw black bars if view is out of bounds
         drawVoid(g2d, viewX, viewY);
-
-        // Adjust viewport to ensure it's within bounds
-        //viewX = Math.max(0, Math.min(viewX, WIDTH - COL));
-        //viewY = Math.max(0, Math.min(viewY, HEIGHT - ROW));
 
         // Draw particles
         for (ParticleBatch batch : particleBatchList) {
@@ -117,14 +112,13 @@ public class ExplorerPanel extends JPanel {
                     int pX = relX * ZOOMX;
                     int pY = relY * ZOOMY;
                     g2d.setColor(particle.getColor());
-                    System.out.println("particle Entered");
                     g2d.fillRect(pX, pY, particle.getSize() * 4, particle.getSize() * 4);
                 }
             }
         }
 
         // Draw the character
-        character.drawMap(g); // Use the transformed Graphics2D object
+        character.drawMap(g);
         // Dispose of the Graphics2D object to free up resources
         g2d.dispose();
 
