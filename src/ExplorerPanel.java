@@ -15,24 +15,26 @@ public class ExplorerPanel extends JPanel {
 
     private Ghost character;
 
-    private final int ORIGIN_X = 640;
-    private final int ORIGIN_Y = -2520;
     private int map_x;
     private int map_y;
 
     private final int CHAR_MAP_WIDTH = 39;
     private final int CHAR_MAP_HEIGHT = 37;
 
+    // CANVAS SETTINGS
     private final int ROW = 19;
-
     private final int COL = 33;
     private final int WIDTH = 1280;
     private final int HEIGHT = 720;
+
+    private final int ZOOMX = WIDTH / COL;
+    private final int ZOOMY = HEIGHT / ROW;
+
     public ExplorerPanel(ArrayList<ParticleBatch> particleBatchList, Ghost character) {
         this.particleBatchList = particleBatchList;
         setPreferredSize(new Dimension(1280, 720));
         //setBackground(new Color(247, 247, 247));
-        setBackground(Color.BLACK);
+        setBackground(new Color(247, 247, 247));
         setLayout(null); // Use null layout to manually position components
 
         map_x = (CHAR_MAP_WIDTH / 2);
@@ -55,23 +57,23 @@ public class ExplorerPanel extends JPanel {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
-                        dy = 5;
+                        dy = 1;
                         //System.out.println("UP");
                         break;
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        dy = -5;
+                        dy = -1;
                         //System.out.println("RIGHT");
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
-                        dx = -5;
+                        dx = -1;
                         character.turnChar(true);
                         //System.out.println("LEFT");
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
-                        dx = 5;
+                        dx = 1;
                         character.turnChar(false);
                         //System.out.println("DOWN");
                         break;
@@ -86,73 +88,43 @@ public class ExplorerPanel extends JPanel {
         requestFocusInWindow();
     }
 
-
-//    private void translateMap(Graphics2D g2d) {
-//        int MapX = (WIDTH / COL * 16) - character.getX();
-//        int MapY = -(HEIGHT / ROW * 9) + character.getY();
-//
-//        if (MapX <= 0 && MapX >= -620)
-//            MapX = 0;
-//        if (MapY >= 0 && MapY <= 341)
-//            MapY = 0;
-//        g2d.translate(MapX, MapY);
-//
-//        character.drawMap(g2d, MapX, MapY);
-//    }
-
-    private int translateX() {
-        int MapX = (WIDTH / COL * 16) - character.getX();
-
-        if (MapX <= 0 && MapX >= -620)
-            MapX = 0;
-
-        return MapX;
-    }
-
-    private int translateY() {
-        int MapY = -(HEIGHT / ROW * 9) + character.getY();
-
-        if (MapY >= 0 && MapY <= 341)
-            MapY = 0;
-
-        return MapY;
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
 
-        // Create a Graphics2D object from the Graphics object
+        g.setColor(Color.WHITE);
+        g.fillRect(0,0, WIDTH, HEIGHT);
+
         Graphics2D g2d = (Graphics2D) g.create();
-        // Set the background color to white
 
+        int viewX = character.getX() - COL / 2;
+        int viewY = HEIGHT - character.getY() - ROW / 2;
 
+        // Draw black bars if viewport is out of bounds
+        drawVoid(g2d, viewX, viewY);
 
-        //translateMap(g2d);
-        int MapX = translateX();
-        int MapY = translateY();
-        g2d.translate(MapX, MapY);
-        g2d.setColor(Color.WHITE);
-        //g2d.fillRect(ORIGIN_X - map_x, ORIGIN_Y + map_y, getWidth() * 4, getHeight() * 4);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        // Adjust viewport to ensure it's within bounds
+        //viewX = Math.max(0, Math.min(viewX, WIDTH - COL));
+        //viewY = Math.max(0, Math.min(viewY, HEIGHT - ROW));
 
         // Draw particles
         for (ParticleBatch batch : particleBatchList) {
             ArrayList<Particle> particleList = batch.getParticles();
             for (Particle particle : particleList) {
-                int pX = (particle.getX() - character.getX());
-                int pY = (particle.getY() - character.getY());
+                int relX = particle.getX() - viewX;
+                int relY = HEIGHT - particle.getY() - viewY;
 
-                System.out.println("px: "+ pX);
-                System.out.println("py: "+ pY);
-                g2d.setColor(particle.getColor());
-                g2d.fillRect(pX, pY, particle.getSize() * 4, particle.getSize() * 4);
+                if (relX >= 0 && relX < COL && relY >= 0 && relY < ROW) {
+                    int pX = relX * ZOOMX;
+                    int pY = relY * ZOOMY;
+                    g2d.setColor(particle.getColor());
+                    System.out.println("particle Entered");
+                    g2d.fillRect(pX, pY, particle.getSize() * 4, particle.getSize() * 4);
+                }
             }
         }
 
         // Draw the character
-        character.drawMap(g2d, MapX, MapY); // Use the transformed Graphics2D object
-
+        character.drawMap(g); // Use the transformed Graphics2D object
         // Dispose of the Graphics2D object to free up resources
         g2d.dispose();
 
@@ -162,6 +134,28 @@ public class ExplorerPanel extends JPanel {
         // Run a function after paintComponent is done
         SwingUtilities.invokeLater(this::runFPSCounter);
     }
+
+    private void drawVoid(Graphics2D graphics, int viewX, int viewY) {
+        graphics.setColor(Color.BLACK);
+        // Adjust for character size
+
+        // Adjust the viewport calculations to consider the character's size
+        if (viewX <= 0) {
+            graphics.fillRect(0, 0, Math.abs(viewX) * ZOOMX, HEIGHT);
+        }
+        if (viewY <= 0) {
+            graphics.fillRect(0, 0, WIDTH, Math.abs(viewY) * ZOOMY);
+        }
+        if (viewX + COL >= WIDTH) {
+            int overflowWidth = (viewX + COL - WIDTH) * ZOOMX - 12;
+            graphics.fillRect(WIDTH - overflowWidth, 0, overflowWidth, HEIGHT);
+        }
+        if (viewY + ROW >= HEIGHT) {
+            int overflowHeight = (viewY + ROW - HEIGHT) * ZOOMY - 10;
+            graphics.fillRect(0, HEIGHT - overflowHeight, WIDTH, overflowHeight);
+        }
+    }
+
 
     private void runFPSCounter() {
         long now = System.currentTimeMillis();

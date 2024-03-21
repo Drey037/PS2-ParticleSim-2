@@ -29,7 +29,7 @@ public class ParticleSystemApp extends JFrame {
 
     private ArrayList<ParticleBatch> particleBatchList;
 
-    private final int MIN_VELOCITY = 3;
+    private final int MIN_VELOCITY = 2;
     private final int MAX_VELOCITY = 30;
 
     private final int MAX_LOAD = 10;
@@ -63,7 +63,7 @@ public class ParticleSystemApp extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        character = new Ghost(0, 0, texture_left, texture_right);
+        character = new Ghost(1, 1, texture_left, texture_right);
 
         // Particle System Panel
         particlePanel = new ParticlePanel(particleBatchList, character);

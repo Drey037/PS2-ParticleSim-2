@@ -17,12 +17,20 @@ public class Ghost {
     private final int WIDTH = 1280;
     private final int HEIGHT = 720;
 
+    private final int SCREEN_WIDTH = 33;
+    private final int SCREEN_HEIGHT = 19;
+    private final int screenX;
+    private final int screenY;
+
     public Ghost(int x, int y, Image texture_left, Image texture_right) {
         this.x = x;
         this.y = y;
         this.texture_left = texture_left;
         this.texture_right = texture_right;
         this.isLeft = true;
+
+        this.screenX = WIDTH / 2 - (CHAR_MAP_WIDTH / 2);
+        this.screenY = HEIGHT / 2 - (CHAR_MAP_HEIGHT / 2);
     }
 
     public void move(int dx, int dy) {
@@ -30,8 +38,8 @@ public class Ghost {
         int newY = y + dy;
 
         System.out.println("NEW X and NEW Y: " + newX + ", " + newY);
-        if (newX >= 0 && newX <= 1280 - CHAR_WIDTH &&
-                newY >= 0 && newY <= 720 - CHAR_HEIGHT) {
+        if (newX >= 0 && newX <= 1280 &&
+                newY >= 0 && newY <= 720) {
             x = newX;
             y = newY;
         }
@@ -49,35 +57,24 @@ public class Ghost {
         return (720 - CHAR_HEIGHT) - y; //minus the height
     }
 
-    public void drawMap(Graphics g, int MapX, int MapY) {
-        // 300 x 270 original
-        // 156 Width, 140 height
+    public void drawMap(Graphics g) {
         if (isLeft) {
-            //g.drawImage(texture_left, 640 - (CHAR_MAP_WIDTH / 2), 360 - (CHAR_MAP_HEIGHT / 2), CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            if (MapX == 0 && MapY != 0) {
-                System.out.println("1");
-                g.drawImage(texture_left, CHAR_MAP_WIDTH / 2 - 20, -y + HEIGHT - (CHAR_MAP_HEIGHT / 2) - 20, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            }
-            else if (MapX != 0 && MapY == 0) {
-                System.out.println("2");
-                g.drawImage(texture_left, x + CHAR_MAP_WIDTH / 2 - 20, (HEIGHT / 2) - CHAR_MAP_HEIGHT / 2+7, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            }
-            else if (MapX != 0 && MapY != 0) {
-                System.out.println("3");
-                g.drawImage(texture_left, x + CHAR_MAP_WIDTH / 2 - 20, -y + HEIGHT - (CHAR_MAP_HEIGHT / 2) - 20, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            }
-            else {
-                System.out.println("4");
-                g.drawImage(texture_right, CHAR_MAP_WIDTH / 2 - 20, HEIGHT - (CHAR_MAP_HEIGHT / 2) - 20, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            }
+            g.drawImage(texture_left, screenX, screenY, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
         }
         else {
-            //g.drawImage(texture_right, 640 - (CHAR_MAP_WIDTH / 2), 360 - (CHAR_MAP_HEIGHT / 2), CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
-            g.drawImage(texture_right, x + CHAR_MAP_WIDTH / 2 - 20, -y + HEIGHT - (CHAR_MAP_HEIGHT / 2) - 20, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
+            g.drawImage(texture_right, screenX, screenY, CHAR_MAP_WIDTH, CHAR_MAP_HEIGHT, null);
         }
 
-        // For 19 rows and 33 columns - 37 height 39 width
     }
+
+    public int getScreenX() {
+        return screenX;
+    }
+
+    public int getScreenY() {
+        return screenY;
+    }
+
 
     public void turnChar(Boolean isLeft) {
         this.isLeft = isLeft;
