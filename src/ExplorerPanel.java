@@ -22,6 +22,12 @@ public class ExplorerPanel extends JPanel {
 
     private final int CHAR_MAP_WIDTH = 39;
     private final int CHAR_MAP_HEIGHT = 37;
+
+    private final int ROW = 19;
+
+    private final int COL = 33;
+    private final int WIDTH = 1280;
+    private final int HEIGHT = 720;
     public ExplorerPanel(ArrayList<ParticleBatch> particleBatchList, Ghost character) {
         this.particleBatchList = particleBatchList;
         setPreferredSize(new Dimension(1280, 720));
@@ -46,38 +52,31 @@ public class ExplorerPanel extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 int dx = 0, dy = 0;
-                int map_dx = 0, map_dy = 0;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
                         dy = 5;
-                        map_dy = 20;
                         //System.out.println("UP");
                         break;
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
                         dy = -5;
-                        map_dy = -20;
                         //System.out.println("RIGHT");
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
                         dx = -5;
-                        map_dx = -20;
                         character.turnChar(true);
                         //System.out.println("LEFT");
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
                         dx = 5;
-                        map_dx = 20;
                         character.turnChar(false);
                         //System.out.println("DOWN");
                         break;
                 }
                 character.move(dx, dy);
-                updateMap(map_dx, map_dy);
-                System.out.println("Map X and Y: " + map_x + ", " + map_y);
                 repaint(); // Redraw the panel to reflect the character's new position
             }
         });
@@ -87,14 +86,36 @@ public class ExplorerPanel extends JPanel {
         requestFocusInWindow();
     }
 
-    private void updateMap(int dx, int dy) {
-        int newX = map_x + dx;
-        int newY = map_y + dy;
 
-        if (newX >= CHAR_MAP_WIDTH / 2 && newX <= (1280 * 4 - (CHAR_MAP_WIDTH / 2)) &&  newY >= CHAR_MAP_HEIGHT / 2 && newY <= (720 * 4 - (CHAR_MAP_HEIGHT / 2))) {
-            map_x = newX;
-            map_y = newY;
-        }
+//    private void translateMap(Graphics2D g2d) {
+//        int MapX = (WIDTH / COL * 16) - character.getX();
+//        int MapY = -(HEIGHT / ROW * 9) + character.getY();
+//
+//        if (MapX <= 0 && MapX >= -620)
+//            MapX = 0;
+//        if (MapY >= 0 && MapY <= 341)
+//            MapY = 0;
+//        g2d.translate(MapX, MapY);
+//
+//        character.drawMap(g2d, MapX, MapY);
+//    }
+
+    private int translateX() {
+        int MapX = (WIDTH / COL * 16) - character.getX();
+
+        if (MapX <= 0 && MapX >= -620)
+            MapX = 0;
+
+        return MapX;
+    }
+
+    private int translateY() {
+        int MapY = -(HEIGHT / ROW * 9) + character.getY();
+
+        if (MapY >= 0 && MapY <= 341)
+            MapY = 0;
+
+        return MapY;
     }
 
     @Override
@@ -104,19 +125,33 @@ public class ExplorerPanel extends JPanel {
         // Create a Graphics2D object from the Graphics object
         Graphics2D g2d = (Graphics2D) g.create();
         // Set the background color to white
+
+
+
+        //translateMap(g2d);
+        int MapX = translateX();
+        int MapY = translateY();
+        g2d.translate(MapX, MapY);
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(ORIGIN_X - map_x, ORIGIN_Y + map_y, getWidth() * 4, getHeight() * 4);
+        //g2d.fillRect(ORIGIN_X - map_x, ORIGIN_Y + map_y, getWidth() * 4, getHeight() * 4);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
 
         // Draw particles
         for (ParticleBatch batch : particleBatchList) {
             ArrayList<Particle> particleList = batch.getParticles();
             for (Particle particle : particleList) {
-                particle.drawMap(g2d); // Use the transformed Graphics2D object
+                int pX = (particle.getX() - character.getX());
+                int pY = (particle.getY() - character.getY());
+
+                System.out.println("px: "+ pX);
+                System.out.println("py: "+ pY);
+                g2d.setColor(particle.getColor());
+                g2d.fillRect(pX, pY, particle.getSize() * 4, particle.getSize() * 4);
             }
         }
 
         // Draw the character
-        character.drawMap(g2d); // Use the transformed Graphics2D object
+        character.drawMap(g2d, MapX, MapY); // Use the transformed Graphics2D object
 
         // Dispose of the Graphics2D object to free up resources
         g2d.dispose();
