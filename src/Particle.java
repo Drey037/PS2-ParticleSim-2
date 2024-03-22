@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Particle {
-    private final int size = 5;
+    private final int size = 2;
 
     private int x, y; // coordinates
+    private double preciseX, preciseY; // for lower velocities
     private int map_x, map_y;
 
     private Color color;
@@ -30,14 +31,17 @@ public class Particle {
         isExplorerMode = false;
         this.map_x = x * 4;
         this.map_y = y * 4;
+        this.preciseX = x;
+        this.preciseY = y;
     }
 
     public void update() {
         // Update position based on velocity and direction
-        x += velocity * Math.cos(theta);
-        y += velocity * Math.sin(theta);
+        preciseX += velocity * Math.cos(this.theta);
+        preciseY += velocity * Math.sin(this.theta);
 
-
+        this.x = (int)Math.round(preciseX);
+        this.y = (int)Math.round(preciseY);
         // For screen bounds
         if (x <= 0 || x >= SCREEN_WIDTH) {
             theta = Math.PI - theta; // Reflect horizontally
@@ -47,6 +51,7 @@ public class Particle {
             theta = -theta; // Reflect vertically
             y = Math.max(0, Math.min(y, SCREEN_HEIGHT)); // Keep within bounds
         }
+
     }
 
 

@@ -443,46 +443,37 @@ public class ParticleSystemApp extends JFrame {
     }
 
     private void addParticlesWithConstantStartPointAndVelocity(int n, int x, int y, double velocity, double startTheta, double endTheta) {
-        double dTheta = (endTheta - startTheta) / (double) n;
-        double incTheta = startTheta;
+        double dTheta = (endTheta - startTheta) / (double) n; // Angular increment in degrees
+        double incTheta = startTheta; // Current angle in degrees
+
         int remainingCount = n;
-
-
-        // Add particles to existing batches that are not full yet
 
         if (!particleBatchList.isEmpty()) {
             for (ParticleBatch batch : particleBatchList) {
-                if (batch.isFull())
-                    break;
+                if (batch.isFull()) break;
                 else {
-                    ArrayList<Particle> pList = new ArrayList<>(); // Clear list before adding particles
-                    int numNeeded = MAX_LOAD - batch.getNumParticles(); // Number of particles to be added to this batch
+                    ArrayList<Particle> pList = new ArrayList<>();
+                    int numNeeded = MAX_LOAD - batch.getNumParticles();
 
-                    // If the number of available space in batch is more than the remaining count to add, then add only what is remaining
                     if (numNeeded > remainingCount) {
                         numNeeded = remainingCount;
                         remainingCount = 0;
-                    } else
-                        remainingCount -= numNeeded; // Get the number of remaining
+                    } else {
+                        remainingCount -= numNeeded;
+                    }
 
                     for (int i = 0; i < numNeeded; i++) {
-                        pList.add(new Particle(x, y, velocity, incTheta));
+                        pList.add(new Particle(x, y, velocity, incTheta)); // The Particle constructor will handle the conversion
                         incTheta += dTheta;
                     }
 
-                    // Add particles to current existing batch
                     synchronized (particleListLock) {
                         batch.addNewParticles(pList);
-
-                        // TEMP PRINT TODO: REMOVE AFTER TEST
-                        //System.out.println("ADDED to existing batch particle num: " + pList.size());
-                        // END TEMP PRINT
                     }
                 }
             }
         }
 
-        // Add the remaining count to new batches if there are still
         while (remainingCount > 0) {
             ArrayList<Particle> xList = new ArrayList<>();
             ParticleBatch pb = new ParticleBatch();
@@ -490,38 +481,21 @@ public class ParticleSystemApp extends JFrame {
 
             for (int i = 0; i < MAX_LOAD; i++) {
                 if (remainingCount > 0) {
-                    xList.add(new Particle(x, y, velocity, incTheta));
+                    xList.add(new Particle(x, y, velocity, incTheta)); // The Particle constructor will handle the conversion
                     incTheta += dTheta;
                     remainingCount--;
-                } else
-                    break;
+                } else break;
             }
             synchronized (particleListLock) {
                 pb.clearParticles();
                 pb.addNewParticles(xList);
                 particleBatchList.add(pb);
-
-
-                // TEMP PRINT TODO: REMOVE AFTER TEST
-                //System.out.println("ADDED NEW BATCH with particle num: " + pb.getNumParticles());
-                // END TEMP PRINT
             }
         }
 
-        // TEMP PRINT TODO: REMOVE AFTER TEST
-//        System.out.println("THREAD NUM START");
-//        for (ParticleBatch batch : particleBatchList)
-//            System.out.println("Thread num: " + batch.getNumParticles());
-//        System.out.println("THREAD NUM END");
-        // END TEMP PRINT
-
-        // Sort list
-        Collections.sort(particleBatchList, new ParticleBatchComparator());
-
-        // Update particle system
-        //particlePanel.repaint();
-
+        // Sort list if needed and update your particle system accordingly
     }
+
 
     private void addParticlesWithConstantStartPointAndAngle(int n, int x, int y, double theta, double startVelocity, double endVelocity) {
         double dVelocity = (endVelocity - startVelocity) / (double) n;
