@@ -29,7 +29,6 @@ public class ParticlePanel extends JPanel {
         setPreferredSize(new Dimension(1280, 720));
         setBackground(Color.BLACK);
         setLayout(null); // Use null layout to manually position components
-        setBorder(new LineBorder(Color.BLACK, 1));
         isExplorerMode = false;
 
         this.character = character;
