@@ -90,14 +90,13 @@ public class ParticlePanel extends JPanel {
     }
     private int translateX(int cameraX) {
         int MapX = -1;
-
         // Too far left
         if (cameraX <= 0) {
             MapX = -(cameraX * ZOOMX); // Ensure MapX is not less than 0
         }
         // Too far right
         else if (cameraX + COL > WIDTH) {
-            MapX = -((cameraX - WIDTH + COL) * ZOOMX); // Ensure MapX does not exceed the maximum right position
+            MapX = -((cameraX - WIDTH + COL) * ZOOMX);
         }
         else if (cameraX > 0 && cameraX <= WIDTH - COL){
             MapX = 0;

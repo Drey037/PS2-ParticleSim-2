@@ -2,6 +2,7 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,10 +53,10 @@ public class ParticleSystemApp extends JFrame {
 
 
         try {
-            File imageUrl_left = new File("../PS2-ParticleSim-2/assets/ghost_left.png");
+            URL imageUrl_left = getClass().getResource("/ghost_left.png");
             texture_left = ImageIO.read(imageUrl_left);
 
-            File imageUrl_right = new File("../PS2-ParticleSim-2/assets/ghost_right.png");
+            URL imageUrl_right = getClass().getResource("/ghost_right.png");
             texture_right = ImageIO.read(imageUrl_right);
         } catch (IOException e) {
             e.printStackTrace();
