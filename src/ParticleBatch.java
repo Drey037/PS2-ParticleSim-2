@@ -54,7 +54,6 @@ public class ParticleBatch extends Thread {
             try {
                 Thread.sleep(10); // Control the update rate
             } catch (Exception e) {
-                // It's good practice to handle exceptions, even if it's just logging them.
                 e.printStackTrace();
             }
         }

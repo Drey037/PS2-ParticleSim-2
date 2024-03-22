@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -16,12 +18,13 @@ public class ParticlePanel extends JPanel {
         setPreferredSize(new Dimension(1280, 720));
         setBackground(new Color(247, 247, 247));
         setLayout(null); // Use null layout to manually position components
+        setBorder(new LineBorder(Color.BLACK, 1));
 
         this.character = character;
 
         // FPS Label
         fpsLabel = new JLabel("DM FPS: 0");
-        fpsLabel.setForeground(new Color(173, 200, 220));
+        fpsLabel.setForeground(Color.BLACK);
         fpsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         add(fpsLabel);
     }
@@ -66,5 +69,4 @@ public class ParticlePanel extends JPanel {
         }
     }
 
-    // Add other methods related to particle drawing and FPS counter here
 }

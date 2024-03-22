@@ -1,7 +1,7 @@
-import javax.imageio.ImageIO;
+import javax.imageio.*;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +39,8 @@ public class ParticleSystemApp extends JFrame {
 
     private int frames;
     public ParticleSystemApp() {
-        setTitle("Particle System App");
-        setSize(1700, 760); // The window itself
+        setTitle("Particle Simulation Explorer");
+        setSize(1750, 760); // The window itself
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -55,10 +55,10 @@ public class ParticleSystemApp extends JFrame {
 
 
         try {
-            URL imageUrl_left = getClass().getResource("ghost_left.png");
+            File imageUrl_left = new File("../PS2-ParticleSim-2/assets/ghost_left.png");
             texture_left = ImageIO.read(imageUrl_left);
 
-            URL imageUrl_right = getClass().getResource("ghost_right.png");
+            File imageUrl_right = new File("../PS2-ParticleSim-2/assets/ghost_right.png");
             texture_right = ImageIO.read(imageUrl_right);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,9 +71,12 @@ public class ParticleSystemApp extends JFrame {
         add(particlePanel, BorderLayout.CENTER);
 
         // Input Panel
-        inputPanel = new JPanel();
-        inputPanel.setPreferredSize(new Dimension(404, 720)); // Main -> width is - input panel width
+        inputPanel = new JPanel(new GridLayout(0, 2));
+        inputPanel.setPreferredSize(new Dimension(255, 720)); // Main -> width is - input panel width
         inputPanel.setLayout(new GridLayout(13, 2));
+        inputPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("PARTICLE SPECIFICATIONS"),
+            BorderFactory.createEmptyBorder(2, 2,2, 2)));
 
 
         // Particle Input
@@ -92,14 +95,14 @@ public class ParticleSystemApp extends JFrame {
         explorerModeButton = new JButton("Explorer Mode");
 
         // Batch options to the input panel
-        String[] batchOptionsArray = {"Constant Velocity and Angle", "Constant Start Point and Velocity", "Constant Start Point and Angle"};
+        String[] batchOptionsArray = {"Different Points", "Different Angles", "Different Velocities"};
         JComboBox<String> batchOptions = new JComboBox<>(batchOptionsArray);
         batchOptions.setSelectedItem("Default"); // Set default option
-        inputPanel.add(new JLabel("Options"));
+        inputPanel.add(new JLabel("Specifications"));
         inputPanel.add(batchOptions);
 
         // INITIAL INPUT PANEL
-        addToInputPanel("Number of Particles (n):", nField);
+        addToInputPanel("Number of Particles:", nField);
         addToInputPanel("Start X:", startXField);
         addToInputPanel("Start Y:", startYField);
         addToInputPanel("End X:", endXField);
@@ -108,8 +111,11 @@ public class ParticleSystemApp extends JFrame {
         addToInputPanel("Velocity:", startVelocityField);
 
         // Method to add a label with border
-        inputPanel.add(submitParticleButton);
+        
         inputPanel.add(explorerModeButton);
+        inputPanel.add(submitParticleButton);
+        
+        
 
         // Action listener for the JComboBox
         batchOptions.addActionListener(e -> {
@@ -117,10 +123,10 @@ public class ParticleSystemApp extends JFrame {
             inputPanel.removeAll(); // Clear previous components
 
             switch (selectedOption) {
-                case "Constant Velocity and Angle":
-                    inputPanel.add(new JLabel("Options"));
+                case "Different Points":
+                    inputPanel.add(new JLabel("Specifications:"));
                     inputPanel.add(batchOptions);
-                    addToInputPanel("Number of Particles (n):", nField);
+                    addToInputPanel("Number of Particles:", nField);
                     addToInputPanel("Start X:", startXField);
                     addToInputPanel("Start Y:", startYField);
                     addToInputPanel("End X:", endXField);
@@ -129,14 +135,14 @@ public class ParticleSystemApp extends JFrame {
                     addToInputPanel("Velocity:", startVelocityField);
 
                     // Method to add a label with border
-                    inputPanel.add(submitParticleButton);
                     inputPanel.add(explorerModeButton);
+                    inputPanel.add(submitParticleButton);
                     break;
-                case "Constant Start Point and Velocity":
-                    inputPanel.add(new JLabel("Options"));
+                case "Different Angles":
+                    inputPanel.add(new JLabel("Specifications:"));
                     inputPanel.add(batchOptions);
 
-                    addToInputPanel("Number of Particles (n):", nField);
+                    addToInputPanel("Number of Particles:", nField);
                     addToInputPanel("X:", startXField);
                     addToInputPanel("Y:", startYField);
                     addToInputPanel("Start Theta:", startThetaField);
@@ -144,14 +150,14 @@ public class ParticleSystemApp extends JFrame {
                     addToInputPanel("Velocity:", startVelocityField); // Reusing x1Field for velocity
 
                     // Method to add a label with border
-                    inputPanel.add(submitParticleButton);
                     inputPanel.add(explorerModeButton);
+                    inputPanel.add(submitParticleButton);
                     break;
-                case "Constant Start Point and Angle":
-                    inputPanel.add(new JLabel("Options"));
+                case "Different Velocities":
+                    inputPanel.add(new JLabel("Specifications:"));
                     inputPanel.add(batchOptions);
 
-                    addToInputPanel("Number of Particles (n):", nField);
+                    addToInputPanel("Number of Particles:", nField);
                     addToInputPanel("X:", startXField);
                     addToInputPanel("Y:", startYField);
                     addToInputPanel("Theta:", startThetaField);
@@ -159,8 +165,8 @@ public class ParticleSystemApp extends JFrame {
                     addToInputPanel("End Velocity:", endVelocityField); // Reusing x1Field for endVelocity
 
                     // Method to add a label with border
-                    inputPanel.add(submitParticleButton);
                     inputPanel.add(explorerModeButton);
+                    inputPanel.add(submitParticleButton);
                     break;
                 default:
                     break;
@@ -330,14 +336,13 @@ public class ParticleSystemApp extends JFrame {
                 }
             }
 
-            // Rendering logic remains unchanged
+
             if (!isExplorerMode) {
                 SwingUtilities.invokeLater(particlePanel::repaint);
             } else {
                 SwingUtilities.invokeLater(explorerPanel::repaint);
             }
 
-            // Sleep logic remains unchanged
             long endTime = System.currentTimeMillis();
             long frameDuration = endTime - currentFrameTime;
             long sleepTime = frameTime - frameDuration;

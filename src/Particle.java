@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Particle {
-    private final int size = 2;
+    private final int size = 3;
 
     private int x, y; // coordinates
     private double preciseX, preciseY; // for lower velocities
@@ -85,6 +85,6 @@ public class Particle {
     public void draw (Graphics g){
         isExplorerMode = false;
         g.setColor(color);
-        g.fillRect(x, SCREEN_HEIGHT - y, size, size);
+        g.fillOval(x, SCREEN_HEIGHT - y, size, size);
     }
 }
