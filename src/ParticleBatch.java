@@ -38,15 +38,24 @@ public class ParticleBatch extends Thread {
 
     @Override
     public void run() {
+        long lastUpdateTime = System.currentTimeMillis(); // Track the last update time
+
         while(true) {
             synchronized(particleListLock) {
-                for (Particle particle : particles)
-                    particle.update();
+                long currentTime = System.currentTimeMillis();
+                long deltaTime = currentTime - lastUpdateTime; // Calculate elapsed time since last update
+                lastUpdateTime = currentTime; // Update lastUpdateTime for the next loop iteration
 
-                try {
-                    Thread.sleep(10);
-                } catch (Exception e) {
+                for (Particle particle : particles) {
+                    particle.update(deltaTime); // Update particles with elapsed time
                 }
+            }
+
+            try {
+                Thread.sleep(10); // Control the update rate
+            } catch (Exception e) {
+                // It's good practice to handle exceptions, even if it's just logging them.
+                e.printStackTrace();
             }
         }
     }

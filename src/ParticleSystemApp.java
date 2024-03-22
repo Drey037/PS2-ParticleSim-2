@@ -29,8 +29,8 @@ public class ParticleSystemApp extends JFrame {
 
     private ArrayList<ParticleBatch> particleBatchList;
 
-    private final int MIN_VELOCITY = 2;
-    private final int MAX_VELOCITY = 30;
+    private final int MIN_VELOCITY = 1;
+    private final int MAX_VELOCITY = 1000;
 
     private final int MAX_LOAD = 10;
 
@@ -314,22 +314,33 @@ public class ParticleSystemApp extends JFrame {
     private void gameLoop() {
         final double maxFramesPerSecond = 60.0;
         final long frameTime = (long) (1000 / maxFramesPerSecond);
-        lastUpdateTime = System.currentTimeMillis();
-        frames = 0;
+        long lastFrameTime = System.currentTimeMillis();
 
         while (true) {
-            long startTime = System.currentTimeMillis();
+            long currentFrameTime = System.currentTimeMillis();
+            long deltaTime = currentFrameTime - lastFrameTime; // Calculate the elapsed time since the last frame
+            lastFrameTime = currentFrameTime;
 
-            // Your game update and render logic here
+            // Update each particle's position based on deltaTime
+            synchronized (particleListLock) {
+                for (ParticleBatch batch : particleBatchList) {
+                    for (Particle particle : batch.getParticles()) { // Assuming getParticles() gives access to the particles in the batch
+                        particle.update(deltaTime);
+                    }
+                }
+            }
+
+            // Rendering logic remains unchanged
             if (!isExplorerMode) {
                 SwingUtilities.invokeLater(particlePanel::repaint);
-            }
-            else
+            } else {
                 SwingUtilities.invokeLater(explorerPanel::repaint);
+            }
 
+            // Sleep logic remains unchanged
             long endTime = System.currentTimeMillis();
-            long deltaTime = endTime - startTime;
-            long sleepTime = frameTime - deltaTime;
+            long frameDuration = endTime - currentFrameTime;
+            long sleepTime = frameTime - frameDuration;
 
             if (sleepTime > 0) {
                 try {

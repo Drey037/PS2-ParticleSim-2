@@ -27,7 +27,7 @@ public class Particle {
         this.y = y;
         this.velocity = velocity;
         this.theta = Math.toRadians(theta);
-        this.color = getRandomLightColor();
+        this.color = getRandomDarkColor();
         isExplorerMode = false;
         this.map_x = x * 4;
         this.map_y = y * 4;
@@ -35,10 +35,13 @@ public class Particle {
         this.preciseY = y;
     }
 
-    public void update() {
-        // Update position based on velocity and direction
-        preciseX += velocity * Math.cos(this.theta);
-        preciseY += velocity * Math.sin(this.theta);
+    public void update(double deltaTime) {
+        // Convert deltaTime from milliseconds to seconds
+        double deltaTimeSeconds = deltaTime / 1000.0;
+
+        // Update position based on velocity and direction, factoring in the elapsed time
+        preciseX += (velocity * Math.cos(this.theta)) * deltaTimeSeconds;
+        preciseY += (velocity * Math.sin(this.theta)) * deltaTimeSeconds;
 
         this.x = (int)Math.round(preciseX);
         this.y = (int)Math.round(preciseY);
@@ -55,10 +58,10 @@ public class Particle {
     }
 
 
-    public static Color getRandomLightColor(){
-        int r = 128 + random.nextInt(128); // Red
-        int g = 128 + random.nextInt(128); // Green
-        int b = 128 + random.nextInt(128); // Blue
+    public static Color getRandomDarkColor(){
+        int r = random.nextInt(128); // Red
+        int g = random.nextInt(128); // Green
+        int b = random.nextInt(128); // Blue
 
         return new Color(r, g, b);
     }
