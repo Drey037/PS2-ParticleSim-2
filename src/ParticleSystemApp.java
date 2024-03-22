@@ -2,7 +2,6 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,8 +14,6 @@ public class ParticleSystemApp extends JFrame {
     private ParticlePanel particlePanel;
 
     private Ghost character;
-
-    private ExplorerPanel explorerPanel;
     private JPanel inputPanel;
     private JTextField startXField, startYField, endXField, endYField, startThetaField, endThetaField, startVelocityField, endVelocityField, nField;
     private JButton submitParticleButton, explorerModeButton;
@@ -67,7 +64,6 @@ public class ParticleSystemApp extends JFrame {
 
         // Particle System Panel
         particlePanel = new ParticlePanel(particleBatchList, character);
-        explorerPanel = new ExplorerPanel(particleBatchList, character);
         add(particlePanel, BorderLayout.CENTER);
 
         // Input Panel
@@ -303,16 +299,8 @@ public class ParticleSystemApp extends JFrame {
         });
 
         add(inputPanel, BorderLayout.EAST);
-        pack();
-
-        // FPS Label
-//        fpsLabel = new JLabel("FPS: 0");
-//        fpsLabel.setForeground(Color.BLACK); // Set text color to white for visibility
-//        fpsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-//        particlePanel.setLayout(null); // Use null layout to manually position components
-//        particlePanel.add(fpsLabel);
-
-
+        pack(); // Adjusts the frame size to fit the preferred size of its components
+        setLocationRelativeTo(null); // Centers the frame on the screen
 
         // Start gamelogic thread
         new Thread(this::gameLoop).start();
@@ -338,11 +326,7 @@ public class ParticleSystemApp extends JFrame {
             }
 
 
-            if (!isExplorerMode) {
-                SwingUtilities.invokeLater(particlePanel::repaint);
-            } else {
-                SwingUtilities.invokeLater(explorerPanel::repaint);
-            }
+            SwingUtilities.invokeLater(particlePanel::repaint);
 
             long endTime = System.currentTimeMillis();
             long frameDuration = endTime - currentFrameTime;
@@ -645,22 +629,21 @@ public class ParticleSystemApp extends JFrame {
     }
 
     private void switchToExplorerMode() {
-        remove(particlePanel);
-        add(explorerPanel, BorderLayout.CENTER);
+        particlePanel.toggleExplorerMode(true);
         revalidate();
         repaint();
         isExplorerMode = true;
+        particlePanel.requestFocusInWindow();
+
 
         // Disable all components in inputPanel
         toggleInputPanelComponents(false);
         // Disable the explorer mode button
         explorerModeButton.setEnabled(true);
-        explorerPanel.requestFocusInWindow();
     }
 
     private void switchToParticleMode() {
-        remove(explorerPanel);
-        add(particlePanel, BorderLayout.CENTER);
+        particlePanel.toggleExplorerMode(false);
         revalidate();
         repaint();
         isExplorerMode = false;
