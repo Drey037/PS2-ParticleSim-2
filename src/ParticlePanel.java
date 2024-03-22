@@ -20,6 +20,7 @@ public class ParticlePanel extends JPanel {
         setLayout(null); // Use null layout to manually position components
         setBorder(new LineBorder(Color.BLACK, 1));
 
+
         this.character = character;
 
         // FPS Label

@@ -40,7 +40,7 @@ public class ParticleSystemApp extends JFrame {
     private int frames;
     public ParticleSystemApp() {
         setTitle("Particle Simulation Explorer");
-        setSize(1750, 760); // The window itself
+        setSize(1540, 720); // The window itself
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -72,7 +72,7 @@ public class ParticleSystemApp extends JFrame {
 
         // Input Panel
         inputPanel = new JPanel(new GridLayout(0, 2));
-        inputPanel.setPreferredSize(new Dimension(255, 720)); // Main -> width is - input panel width
+        inputPanel.setPreferredSize(new Dimension(260, 720)); // Main -> width is - input panel width
         inputPanel.setLayout(new GridLayout(13, 2));
         inputPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("PARTICLE SPECIFICATIONS"),
@@ -303,6 +303,7 @@ public class ParticleSystemApp extends JFrame {
         });
 
         add(inputPanel, BorderLayout.EAST);
+        pack();
 
         // FPS Label
 //        fpsLabel = new JLabel("FPS: 0");
